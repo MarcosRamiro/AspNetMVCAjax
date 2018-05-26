@@ -6,11 +6,8 @@
 
 <h2>Index</h2>
 
-
-@using (Html.BeginForm()) 
-{
     @Html.AntiForgeryToken()
-    
+
     <div class="form-horizontal">
         <h4>Usuario</h4>
         <hr />
@@ -41,11 +38,12 @@
 
         <div class="form-group">
             <div class="col-md-offset-2 col-md-10">
-                <input type="submit" value="Create" class="btn btn-default" />
+                <input id="btnCriarUsuario" type="submit" value="Create" class="btn btn-default" />
             </div>
         </div>
     </div>
-}
+
+<div id="msgaousuario"></div>
 
 <div>
     @Html.ActionLink("Back to List", "Index")
@@ -54,3 +52,63 @@
 <script src="~/Scripts/jquery-1.10.2.min.js"></script>
 <script src="~/Scripts/jquery.validate.min.js"></script>
 <script src="~/Scripts/jquery.validate.unobtrusive.min.js"></script>
+
+<script>
+
+    $(document).ready(function () {
+        $("#msgaousuario").hide();
+    });
+
+    $("#btnCriarUsuario").click(function () {
+        var url = "@Url.Action("CriarUsuario", "Usuario")";
+        var login = $("#Login").val();
+        var senha = $("#Senha").val();
+        var dataCadastro = $("#DataCadastro").val();
+        var data = {login:login, senha:senha, DataCadastro:dataCadastro };
+
+        $.post(url, JSON.stringify(data)).done(function (data) {
+            if (data != null && data != undefined) {
+                if (data.status != null && data.status != undefined) {
+                    console.log(data.status);
+                    console.log(data.mensagem);
+
+                    if (data.status)
+                    {
+                        $("#msgaousuario").removeClass("alert alert-danger").addClass("alert alert-succes");
+                        $("#msgaousuario").text("");
+                        $("#msgaousuario").append("<strong> Mensagem: </strong>" + data.mensagem)
+                        $("#msgaousuario").show();
+                        $("#btnCriarUsuario").prop("disabled" , true);
+                        setTimeout(function () {
+                            $("#msgaousuario").hide();
+                            $("#btnCriarUsuario").prop("disabled" , false);
+                        }, 3000);
+                    }
+                    else
+                    {
+                        $("#msgaousuario").removeClass("alert alert-success").addClass("alert alert-danger");
+                        $("#msgaousuario").text("");
+                        $("#msgaousuario").append("<strong> Mensagem: </strong>" + data.mensagem)
+                        $("#msgaousuario").show();
+                        $("#btnCriarUsuario").prop("disabled", true);
+                        setTimeout(function () {
+                            $("#msgaousuario").hide();
+                            $("#btnCriarUsuario").prop("disabled" , false);
+                        }, 3000);
+                    }
+
+                    
+                }
+            }
+            console.log("Processamento Realizado")
+        }).fail(function(){
+            console.log("Erro no Processamento");
+            
+
+        }).always(function(){
+            console.log("Felicidade....");   
+        });
+    });
+    
+
+</script>

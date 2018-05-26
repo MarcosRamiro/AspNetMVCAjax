@@ -1,89 +1,54 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using MVCAndAjax.Models;
 using System.Web.Mvc;
 
 namespace MVCAndAjax.Controllers
 {
     public class UsuarioController : Controller
     {
+        List<Usuario> lstUsuario = new List<Usuario>();
+
+        private void InicializarLista()
+        {
+            lstUsuario.Add(new Usuario { Id = 1, Login = "mrsantos", Senha = "123", DataCadastro = new DateTime(2018, 05, 26) });
+            lstUsuario.Add(new Usuario { Id = 1, Login = "daniel", Senha = "123", DataCadastro = new DateTime(2018, 05, 26) });
+            lstUsuario.Add(new Usuario { Id = 1, Login = "maria", Senha = "123", DataCadastro = new DateTime(2018, 05, 26) });
+            lstUsuario.Add(new Usuario { Id = 1, Login = "isabel", Senha = "123", DataCadastro = new DateTime(2018, 05, 26) });
+            lstUsuario.Add(new Usuario { Id = 1, Login = "osvaldo", Senha = "123", DataCadastro = new DateTime(2018, 05, 26) });
+        }
+
         // GET: Usuario
         public ActionResult Index()
         {
+            ViewBag.listausuario = lstUsuario; ;
             return View();
         }
-
-        // GET: Usuario/Details/5
-        public ActionResult Details(int id)
-        {
-            return View();
-        }
-
-        // GET: Usuario/Create
-        public ActionResult Create()
-        {
-            return View();
-        }
-
-        // POST: Usuario/Create
         [HttpPost]
-        public ActionResult Create(FormCollection collection)
+        public JsonResult CriarUsuario(Usuario usuario)
         {
             try
             {
-                // TODO: Add insert logic here
+                #region Valição
+                if (usuario == null)
+                    throw new ArgumentNullException("Usuário nao pode ser nulo");
 
-                return RedirectToAction("Index");
+                if (usuario.Login == null || usuario.Login.Equals(""))
+                    throw new ArgumentNullException("Usuário.Login nao pode ser nulo");
+                if (usuario.Senha == null || usuario.Senha.Equals(""))
+                    throw new ArgumentNullException("Usuário.Senha nao pode ser nulo");
+                #endregion
+            
+
+            this.lstUsuario.Add(usuario);
+            return Json(new { status = true, mensagem = "Usuário cadastrado com sucesso" }
+                );
             }
-            catch
+            catch (Exception e)
             {
-                return View();
+                return Json(new  { status = false, mensagem = $"{e.Message}" });
             }
         }
-
-        // GET: Usuario/Edit/5
-        public ActionResult Edit(int id)
-        {
-            return View();
-        }
-
-        // POST: Usuario/Edit/5
-        [HttpPost]
-        public ActionResult Edit(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add update logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
-
-        // GET: Usuario/Delete/5
-        public ActionResult Delete(int id)
-        {
-            return View();
-        }
-
-        // POST: Usuario/Delete/5
-        [HttpPost]
-        public ActionResult Delete(int id, FormCollection collection)
-        {
-            try
-            {
-                // TODO: Add delete logic here
-
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                return View();
-            }
-        }
+        
     }
 }
